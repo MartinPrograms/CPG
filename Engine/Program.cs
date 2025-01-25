@@ -11,8 +11,8 @@ var window = Graphics.Initialize()
     .WithGraphicsInterface(new OpenGLBackend.OpenGLBackend())
     .Build();
 
-Mesh mesh = null;
-Shader shader = null;
+Mesh mesh = null!;
+
 window.SetRenderCallback(new GraphicsCallback((a, w) =>
 {
     a.Clear(ClearMask.Color | ClearMask.Depth);   
@@ -49,7 +49,7 @@ window.SetUpdateCallback((w) =>
 
 window.SetLoadCallback((w) =>
 {
-    shader = new Shader(w.GraphicsApi, File.ReadAllText("Shaders/Basic.vert"), File.ReadAllText("Shaders/Basic.frag"));
+    var shader = new Shader(w.GraphicsApi, File.ReadAllText("Shaders/Basic.vert"), File.ReadAllText("Shaders/Basic.frag"));
     mesh = new Mesh(w.GraphicsApi, shader);
     
     mesh.Vertices = new float[]
