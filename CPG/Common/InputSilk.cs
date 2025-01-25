@@ -9,9 +9,11 @@ public class InputSilk : IInput
     private IInputContext _inputContext;
     private List<Key> _keysDown = new List<Key>();
     private List<Key> _previousKeysDown = new List<Key>();
+    private List<Key> _nextKeysDown = new List<Key>();
     
     private List<MouseButton> _mouseButtonsDown = new List<MouseButton>();
     private List<MouseButton> _previousMouseButtonsDown = new List<MouseButton>();
+    private List<MouseButton> _nextMouseButtonsDown = new List<MouseButton>();
     
     public InputSilk(IInputContext inputContext)
     {
@@ -19,15 +21,15 @@ public class InputSilk : IInput
 
         _inputContext.Keyboards[0].KeyDown += (sender, args, integer) =>
         {
-            if (!_keysDown.Contains(args))
+            if (!_nextKeysDown.Contains(args))
             {
-                _keysDown.Add(args);
+                _nextKeysDown.Add(args);
             }
         };
 
         _inputContext.Keyboards[0].KeyUp += (sender, args, integer) =>
         {
-            _keysDown.Remove(args);
+            _nextKeysDown.Remove(args);
         };
         
         _inputContext.Mice[0].MouseMove += (sender, args) =>
@@ -38,15 +40,15 @@ public class InputSilk : IInput
         
         _inputContext.Mice[0].MouseDown += (sender, args) =>
         {
-            if (!_mouseButtonsDown.Contains(args))
+            if (!_nextMouseButtonsDown.Contains(args))
             {
-                _mouseButtonsDown.Add(args);
+                _nextMouseButtonsDown.Add(args);
             }
         };
         
         _inputContext.Mice[0].MouseUp += (sender, args) =>
         {
-            _mouseButtonsDown.Remove(args);
+            _nextMouseButtonsDown.Remove(args);
         };
     }
 
@@ -56,10 +58,13 @@ public class InputSilk : IInput
         _previousKeysDown.Clear();
         _previousKeysDown.AddRange(_keysDown);
         _keysDown.Clear();
+        _keysDown.AddRange(_nextKeysDown);
+        
         _previousMousePosition = MousePosition;
         _previousMouseButtonsDown.Clear();
         _previousMouseButtonsDown.AddRange(_mouseButtonsDown);
         _mouseButtonsDown.Clear();
+        _mouseButtonsDown.AddRange(_nextMouseButtonsDown);
     }
     
     public bool IsKeyDown(Key key)

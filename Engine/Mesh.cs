@@ -5,10 +5,14 @@ namespace Engine;
 
 public class Mesh
 {
+    public Transform Transform { get; set; } = Transform.Default();
+    
+    private Shader _shader;
     private IGraphicsApi _GraphicsApi;
-    public Mesh(IGraphicsApi objGraphicsApi)
+    public Mesh(IGraphicsApi objGraphicsApi, Shader shader)
     {
         _GraphicsApi = objGraphicsApi;
+        _shader = shader;
     }
     
     public float[] Vertices { get; set; }
@@ -49,6 +53,7 @@ public class Mesh
     
     public void Draw()
     {
+        _shader.Use();
         var settings = new DrawCallSettings<float, uint>(VertexBuffer, IndexBuffer, Primitive.Triangle, Vertices.Length, Indices.Length, 0);
         _GraphicsApi.Draw(settings);
     }
