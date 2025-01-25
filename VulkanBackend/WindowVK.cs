@@ -1,4 +1,5 @@
-﻿using CPG.Common;
+﻿using System.Runtime.InteropServices;
+using CPG.Common;
 using CPG.Interface;
 using CPG.Interface.Settings;
 using Silk.NET.Input;
@@ -134,5 +135,17 @@ public class WindowVK : IWindow
     {
         if (NeedsSwap)   
             _window.SwapBuffers();
+    }
+
+    public unsafe string[] GetRequiredExtensions()
+    {
+        var ptr = _window.VkSurface.GetRequiredExtensions(out uint count);
+        List<string> extensions = new();
+        for (int i = 0; i < count; i++)
+        {
+            extensions.Add(Marshal.PtrToStringAnsi((IntPtr)ptr[i]));
+        }
+        
+        return extensions.ToArray();
     }
 }

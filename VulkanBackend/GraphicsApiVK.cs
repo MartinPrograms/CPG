@@ -3,6 +3,8 @@ using System.Numerics;
 using CPG.Common;
 using CPG.Common.Rendering;
 using CPG.Interface;
+using VulkanBackend.Vulkan.Common;
+using VulkanBackend.Vulkan.Initialization;
 using IWindow = Silk.NET.Windowing.IWindow;
 
 namespace VulkanBackend;
@@ -10,17 +12,18 @@ namespace VulkanBackend;
 public class GraphicsApiVK : IGraphicsApi
 {
     private IWindow _window;
-    private Vk _vk;
+    private Context _context;
     
     public GraphicsApiVK(IWindow window)
     {
         _window = window;
-        _vk = Vk.GetApi();
+        _context = new Context();
+        _context.Vk = Vk.GetApi();
     }
     
     public void Init()
     {
-        
+        Loader.LoadVulkan(ref _context);
     }
 
     public void Shutdown()

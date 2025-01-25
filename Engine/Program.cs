@@ -7,11 +7,14 @@ using Engine;
 using Silk.NET.Input;
 using VulkanBackend.Settings;
 
+Logger.Init(); // Rerout any crash to the logger, and then quit the application
+
 var settings = new SettingsContainer();
 settings.Add(new InitializationSettings()
 {
     ValidationLayers = true,
-    Debug = true
+    Debug = true,
+    
 });
 
 var window = Graphics.Initialize()
