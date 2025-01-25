@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenGLBackend", "OpenGLBackend\OpenGLBackend.csproj", "{374172AE-2259-4ADC-B7F0-E56F34CB8312}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VulkanBackend", "VulkanBackend\VulkanBackend.csproj", "{747B3D89-A838-4E1A-A394-B297595CFF4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{374172AE-2259-4ADC-B7F0-E56F34CB8312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{374172AE-2259-4ADC-B7F0-E56F34CB8312}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{374172AE-2259-4ADC-B7F0-E56F34CB8312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{747B3D89-A838-4E1A-A394-B297595CFF4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{747B3D89-A838-4E1A-A394-B297595CFF4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{747B3D89-A838-4E1A-A394-B297595CFF4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{747B3D89-A838-4E1A-A394-B297595CFF4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

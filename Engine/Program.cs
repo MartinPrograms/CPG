@@ -5,10 +5,19 @@ using CPG.Interface;
 using CPG.Interface.Settings;
 using Engine;
 using Silk.NET.Input;
+using VulkanBackend.Settings;
+
+var settings = new SettingsContainer();
+settings.Add(new InitializationSettings()
+{
+    ValidationLayers = true,
+    Debug = true
+});
 
 var window = Graphics.Initialize()
     .WithWindowSettings(new WindowSettings("Testing", 800, 600, false, false))
-    .WithGraphicsInterface(new OpenGLBackend.OpenGLBackend())
+    .WithGraphicsInterface(new VulkanBackend.VulkanBackend())
+    .WithCustomSettings(settings)
     .Build();
 
 Mesh mesh = null!;

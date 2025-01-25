@@ -11,6 +11,7 @@
     <ItemGroup>
       <ProjectReference Include="..\CPG\CPG.csproj" />
       <ProjectReference Include="..\OpenGLBackend\OpenGLBackend.csproj" />
+      <ProjectReference Include="..\VulkanBackend\VulkanBackend.csproj" />
     </ItemGroup>
 
     <ItemGroup>

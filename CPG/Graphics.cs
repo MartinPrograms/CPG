@@ -34,4 +34,9 @@ public class Graphics
         return _graphicsInterface.Create(_windowSettings);
     }
 
+    public Graphics WithCustomSettings(SettingsContainer settingsContainer)
+    {
+        _graphicsInterface.Settings = settingsContainer;
+        return this;
+    }
 }

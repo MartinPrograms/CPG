@@ -25,7 +25,7 @@ public class OpenGLBackend : IGraphicsInterface
 
     public bool MultiThreaded => true;
     public bool MultiWindow => false;
-    public SettingsContainer Settings { get; } = new();
+    public SettingsContainer Settings { get; set; } = new();
 
     public IWindow Create(WindowSettings settings)
     {
