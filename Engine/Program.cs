@@ -28,7 +28,22 @@ window.SetUpdateCallback((w) =>
 {
     if (w.Input.IsKeyDown(Key.A))
     {
-        Console.WriteLine("A is down!");
+        mesh!.Transform.Position += new Vector3(-0.1f, 0.0f, 0.0f) * (float)w.DeltaTime;
+    }
+
+    if (w.Input.IsKeyDown(Key.D))
+    {
+        mesh!.Transform.Position += new Vector3(0.1f, 0.0f, 0.0f) * (float)w.DeltaTime;
+    }
+    
+    if (w.Input.IsKeyDown(Key.W))
+    {
+        mesh!.Transform.Position += new Vector3(0.0f, 0.1f, 0.0f) * (float)w.DeltaTime;
+    }
+
+    if (w.Input.IsKeyDown(Key.S))
+    {
+        mesh!.Transform.Position += new Vector3(0.0f, -0.1f, 0.0f) * (float)w.DeltaTime;
     }
 });
 

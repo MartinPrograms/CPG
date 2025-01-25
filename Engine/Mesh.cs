@@ -1,4 +1,5 @@
-﻿using CPG.Common.Rendering;
+﻿using System.Numerics;
+using CPG.Common.Rendering;
 using CPG.Interface;
 
 namespace Engine;
@@ -54,6 +55,11 @@ public class Mesh
     public void Draw()
     {
         _shader.Use();
+
+        if (!_shader.SetUniform("model", Transform.GetModelMatrix()))
+        {
+            Console.WriteLine("Failed to set uniform model");
+        }
         var settings = new DrawCallSettings<float, uint>(VertexBuffer, IndexBuffer, Primitive.Triangle, Vertices.Length, Indices.Length, 0);
         _GraphicsApi.Draw(settings);
     }

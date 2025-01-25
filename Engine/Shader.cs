@@ -1,4 +1,5 @@
-﻿using CPG.Common.Rendering;
+﻿using System.Numerics;
+using CPG.Common.Rendering;
 using CPG.Interface;
 
 namespace Engine;
@@ -23,5 +24,10 @@ public class Shader
     public void Use()
     {
         _graphicsApi.UseShader(_shader);
+    }
+
+    public bool SetUniform<T>(string name, T getModelMatrix)
+    {
+        return _graphicsApi.SetUniform(_shader, name, getModelMatrix);
     }
 }
