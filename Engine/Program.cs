@@ -45,6 +45,11 @@ window.SetUpdateCallback((w) =>
     {
         mesh.Transform.Position += new Vector3(0.0f, -0.1f, 0.0f) * (float)w.DeltaTime;
     }
+    
+    if (w.Input.IsKeyReleased(Key.Escape))
+    {
+        w.Close();
+    }
 });
 
 window.SetLoadCallback((w) =>

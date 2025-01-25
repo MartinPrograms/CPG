@@ -119,12 +119,6 @@ public class VertexBufferGL<T> : IVertexBuffer where T : unmanaged
 
     public void LinkIndexBuffer<T>(IIndexBuffer indexBuffer) where T : unmanaged
     {
-        if (indexBuffer is IndexBufferGL<T> glBuffer)
-        {
-            _gl.BindVertexArray(_vao);
-            glBuffer.Bind();
-            
-            _gl.BindVertexArray(0);
-        }
+        // Does not do anything on OpenGL. But in Vulkan it might differ.
     }
 }
