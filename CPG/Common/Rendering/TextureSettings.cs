@@ -1,14 +1,28 @@
 ﻿namespace CPG.Common.Rendering;
 
-public record TextureSettings(int Width,
-    int Height,
-    TextureFormat Format,
-    PixelFormat PixelFormat,
-    TextureFilter Filter,
-    TextureWrap Wrap,
-    bool GenerateMipmaps,
-    IntPtr? Data = null
-    );
+public unsafe class TextureSettings
+{
+    public int Width;
+    public int Height;
+    public     TextureFormat Format;
+    public PixelFormat PixelFormat;
+    public     TextureFilter Filter;
+    public TextureWrap Wrap;
+    public bool GenerateMipmaps;
+    public void* Data = null;
+    
+    public TextureSettings(int width, int height, TextureFormat format, PixelFormat pixelFormat, TextureFilter filter, TextureWrap wrap, bool generateMipmaps, void* data = null)
+    {
+        Width = width;
+        Height = height;
+        Format = format;
+        PixelFormat = pixelFormat;
+        Filter = filter;
+        Wrap = wrap;
+        GenerateMipmaps = generateMipmaps;
+        Data = data;
+    }
+};
 
 public enum TextureFormat
 {
