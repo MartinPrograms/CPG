@@ -62,20 +62,53 @@ public static class SwapchainHelper
         // Wait for the device to finish before deleting the swapchain
         vk.DeviceWaitIdle(logicalDevice);
         
-        for (var i = 0; i < objSwapchain.ImageCount; i++)
+        foreach(var imageView in objSwapchain.SwapchainImageViews)
         {
-            vk.DestroyImageView(logicalDevice, objSwapchain.SwapchainImageViews[i], null);
-            vk.DestroyImage(logicalDevice, objSwapchain.DepthImages[i], null);
-            vk.FreeMemory(logicalDevice, objSwapchain.DepthImageMemory[i], null);
-            vk.DestroyFramebuffer(logicalDevice, objSwapchain.Framebuffers[i], null);
-            vk.DestroyFence(logicalDevice, objSwapchain.InFlightFences[i], null);
-            vk.DestroyFence(logicalDevice, objSwapchain.ImagesInFlight[i], null);
-            vk.DestroySemaphore(logicalDevice, objSwapchain.ImageAvailableSemaphores[i], null);
-            vk.DestroySemaphore(logicalDevice, objSwapchain.RenderFinishedSemaphores[i], null);
+            vk.DestroyImageView(logicalDevice, imageView, null);
+        }
+
+        objSwapchain.SwapchainExtension.DestroySwapchain(logicalDevice, objSwapchain.Swapchain, null);
+        vk.DestroyRenderPass(logicalDevice, objSwapchain.RenderPass, null);
+
+        foreach (var framebuffer in objSwapchain.Framebuffers)
+        {
+            vk.DestroyFramebuffer(logicalDevice, framebuffer, null);
         }
         
-        vk.DestroyRenderPass(logicalDevice, objSwapchain.RenderPass, null);
-        objSwapchain.SwapchainExtension.DestroySwapchain(logicalDevice, objSwapchain.Swapchain, null);
+        foreach (var depthImageView in objSwapchain.DepthImageViews)
+        {
+            vk.DestroyImageView(logicalDevice, depthImageView, null);
+        }
+        
+        foreach (var depthImage in objSwapchain.DepthImages)
+        {
+            vk.DestroyImage(logicalDevice, depthImage, null);
+        }
+        
+        foreach (var depthImageMemory in objSwapchain.DepthImageMemory)
+        {
+            vk.FreeMemory(logicalDevice, depthImageMemory, null);
+        }
+        
+        foreach (var imageAvailableSemaphore in objSwapchain.ImageAvailableSemaphores)
+        {
+            vk.DestroySemaphore(logicalDevice, imageAvailableSemaphore, null);
+        }
+        
+        foreach (var renderFinishedSemaphore in objSwapchain.RenderFinishedSemaphores)
+        {
+            vk.DestroySemaphore(logicalDevice, renderFinishedSemaphore, null);
+        }
+        
+        foreach (var inFlightFence in objSwapchain.InFlightFences)
+        {
+            vk.DestroyFence(logicalDevice, inFlightFence, null);
+        }
+        
+        foreach (var imageInFlight in objSwapchain.ImagesInFlight)
+        {
+            vk.DestroyFence(logicalDevice, imageInFlight, null);
+        }
         
         Logger.Info("Swapchain deleted", "SwapchainHelper");
     }
@@ -191,7 +224,6 @@ public static class SwapchainHelper
         {
             ImageHelper.CreateImage(cpgSwapchain.SwapchainExtent.Width, cpgSwapchain.SwapchainExtent.Height, depthFormat, ImageTiling.Optimal, ImageUsageFlags.DepthStencilAttachmentBit, MemoryPropertyFlags.DeviceLocalBit, out cpgSwapchain.DepthImages[i], out cpgSwapchain.DepthImageMemory[i]);
             cpgSwapchain.DepthImageViews[i] = ImageHelper.CreateImageView(cpgSwapchain.DepthImages[i], depthFormat, ImageAspectFlags.DepthBit);
-
         }
     }
 

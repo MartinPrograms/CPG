@@ -31,7 +31,7 @@ public class GraphicsApiVK : IGraphicsApi
 
     public void Shutdown()
     {
-        throw new NotImplementedException();
+        Loader.Cleanup(ref _context);
     }
 
     public void Clear(ClearMask mask)

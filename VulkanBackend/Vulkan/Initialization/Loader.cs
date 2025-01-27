@@ -1,4 +1,5 @@
-﻿using VulkanBackend.Settings;
+﻿using CPG;
+using VulkanBackend.Settings;
 using VulkanBackend.Vulkan.Common;
 using VulkanBackend.Vulkan.Initialization.Helpers;
 
@@ -9,6 +10,18 @@ public class Loader
     public static void LoadVulkan(ref Context context, InitializationSettings settings, WindowVK window)
     {
         context.Settings = settings;
+        
+        context.DeletionQueue.Push(c =>
+        {
+            unsafe
+            {
+                // Swapchain already added to deletion queue
+                c.Vk.DestroyCommandPool(c.Device, c.CommandPool, null);
+                SurfaceHelper.DestroySurface(c.Instance, c.Surface);
+                c.Vk.DestroyDevice(c.Device, null);
+                InstanceHelper.DestroyInstance(c.Instance, c.DebugUtils);
+            }
+        });
         
         var instance = InstanceHelper.CreateInstance(settings, window, out var debugUtils);
         context.Instance = instance;
@@ -37,5 +50,18 @@ public class Loader
         
         // This concludes the default initialization of the Vulkan backend.
         // Now we can move on to creating pipelines, meshes and other stuff.
+    }
+
+    public static unsafe void Cleanup(ref Context context)
+    {
+        var stack = context.DeletionQueue;
+        while (stack.Count > 0)
+        {
+            Logger.Info($"Cleaning up {stack.Count}", "VulkanBackend");
+            stack.Pop().Invoke(context);
+        }
+
+        Logger.Info("Vulkan cleanup complete", "VulkanBackend");
+        Logger.Info("Goodbye :3", "VulkanBackend");
     }
 }

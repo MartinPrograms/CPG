@@ -93,6 +93,11 @@ public class WindowVK : IWindow
             Width = x;
             Height = y;
         };
+        
+        _window.Closing += () =>
+        {
+            GraphicsApi.Shutdown();
+        };
     }
     
     public void Show()

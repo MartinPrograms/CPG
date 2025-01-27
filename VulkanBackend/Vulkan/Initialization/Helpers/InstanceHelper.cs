@@ -114,4 +114,21 @@ public class InstanceHelper
         
         return instance;
     }
+
+    public static unsafe void DestroyInstance(Instance objInstance, DebugUtilsMessengerEXT objDebugUtils)
+    {
+        var vk = Context.Current.Vk;
+        
+        if (objDebugUtils.Handle != 0)
+        {
+            var hasExt = vk.TryGetInstanceExtension<Silk.NET.Vulkan.Extensions.EXT.ExtDebugUtils>(objInstance,
+                out var debugUtilsExtension);
+            if (hasExt)
+            {
+                debugUtilsExtension.DestroyDebugUtilsMessenger(objInstance, objDebugUtils, null);
+            }
+        }
+
+        vk.DestroyInstance(objInstance, null);
+    }
 }
