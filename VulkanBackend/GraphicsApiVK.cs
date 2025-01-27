@@ -3,6 +3,7 @@ using System.Numerics;
 using CPG.Common;
 using CPG.Common.Rendering;
 using CPG.Interface;
+using VulkanBackend.Settings;
 using VulkanBackend.Vulkan.Common;
 using VulkanBackend.Vulkan.Initialization;
 using IWindow = Silk.NET.Windowing.IWindow;
@@ -11,19 +12,21 @@ namespace VulkanBackend;
 
 public class GraphicsApiVK : IGraphicsApi
 {
-    private IWindow _window;
+    private WindowVK _window;
     private Context _context;
+    public SettingsContainer Settings { get; set; } = new();
     
-    public GraphicsApiVK(IWindow window)
+    public GraphicsApiVK(WindowVK window)
     {
         _window = window;
+        Settings = window.Settings;
         _context = new Context();
         _context.Vk = Vk.GetApi();
     }
     
     public void Init()
     {
-        Loader.LoadVulkan(ref _context);
+        Loader.LoadVulkan(ref _context, Settings.Get<InitializationSettings>(), _window);
     }
 
     public void Shutdown()
@@ -158,6 +161,7 @@ public class GraphicsApiVK : IGraphicsApi
 
     public GraphicsError? GetError()
     {
-        throw new NotImplementedException();
+        // Unused, all errors are thrown, because (unlike OpenGL) Vulkan errors are done differently.
+        return null;
     }
 }

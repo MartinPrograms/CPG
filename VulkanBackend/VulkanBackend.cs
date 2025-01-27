@@ -1,7 +1,6 @@
 ﻿using CPG.Common;
 using CPG.Interface;
 using CPG.Interface.Settings;
-using OpenGLBackend;
 using Silk.NET.Windowing;
 using IWindow = CPG.Interface.IWindow;
 using OperatingSystem = CPG.Common.OperatingSystem;
@@ -16,9 +15,10 @@ public class VulkanBackend : IGraphicsInterface
 
     public bool MultiThreaded { get; }
     public bool MultiWindow { get; }
-    public SettingsContainer Settings { get; set; } = new();
-    public IWindow Create(WindowSettings settings)
+    public SettingsContainer Settings { get; set; }
+    public IWindow Create(SettingsContainer @interface, WindowSettings settings)
     {
+        Settings = @interface;
         return new WindowVK(settings, Settings);
     }
     

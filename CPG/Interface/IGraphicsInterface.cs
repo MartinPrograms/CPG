@@ -18,7 +18,6 @@ public interface IGraphicsInterface
     public bool IsSupported();
     public bool MultiThreaded { get; }
     public bool MultiWindow { get; }
-    public SettingsContainer Settings { get; set; }
     
-    public IWindow Create(WindowSettings settings);
+    public IWindow Create(SettingsContainer @interface, WindowSettings settings);
 }

@@ -6,7 +6,9 @@ public class Logger
     
     public static void Log(string message, string title, string stackTrace, LogSeverity severity)
     {
-        LogItems.Add(new LogItem(message, title, stackTrace, severity));
+        var item = new LogItem(message, title, stackTrace, severity);
+        LogItems.Add(item);
+        Console.WriteLine(item);
     }
     
     public static void Info(string message, string title, string stackTrace = "")
@@ -48,7 +50,6 @@ public class Logger
         
         AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
         {
-            Print();
             var dumpPath = Path.Combine("dumps", $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
             Directory.CreateDirectory("dumps");
             File.WriteAllLines(dumpPath, LogItems.Select(logItem => logItem.ToString()));
@@ -73,7 +74,7 @@ public class LogItem
     
     public override string ToString()
     {
-        return $"[{Severity}] {Title}: {Message}\n{StackTrace}";
+        return $"[{Severity}] {Title}: {Message}{(StackTrace != "" ? $"\n{StackTrace}" : "")}";
     }
 }
 

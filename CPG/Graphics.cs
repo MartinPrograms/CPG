@@ -12,6 +12,7 @@ public class Graphics
 {
     private WindowSettings _windowSettings;
     private IGraphicsInterface _graphicsInterface;
+    private SettingsContainer _settingsContainer;
     public static Graphics Initialize()
     {
         return new Graphics();
@@ -31,12 +32,12 @@ public class Graphics
     
     public IWindow Build()
     {
-        return _graphicsInterface.Create(_windowSettings);
+        return _graphicsInterface.Create(_settingsContainer,_windowSettings);
     }
 
     public Graphics WithCustomSettings(SettingsContainer settingsContainer)
     {
-        _graphicsInterface.Settings = settingsContainer;
+        _settingsContainer = settingsContainer;
         return this;
     }
 }

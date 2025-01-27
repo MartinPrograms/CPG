@@ -1,4 +1,5 @@
 ﻿using CPG.Interface;
+using Silk.NET.Vulkan;
 using VulkanBackend.Vulkan.Common;
 
 namespace VulkanBackend.Settings;
@@ -18,4 +19,6 @@ public class InitializationSettings : ISetting
     public VulkanVersion ApplicationVersion { get; set; } = new(1,0,0);
     public VulkanVersion EngineVersion { get; set; } = new(1,0,0);
     public VulkanVersion ApiVersion { get; set; } = new(1,0,0);
+
+    public Func<PhysicalDeviceProperties, PhysicalDeviceFeatures, int>? IsDeviceSuitable { get; set; }
 }

@@ -27,8 +27,9 @@ public class OpenGLBackend : IGraphicsInterface
     public bool MultiWindow => false;
     public SettingsContainer Settings { get; set; } = new();
 
-    public IWindow Create(WindowSettings settings)
+    public IWindow Create(SettingsContainer @interface, WindowSettings settings)
     {
+        Settings = @interface;
         var window = new WindowGL(settings);
         return window;
     }

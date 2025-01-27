@@ -33,4 +33,11 @@ public static class UnsafeExtensions
             return p;
         }
     }
+    
+    public static unsafe byte** ToPointerArray (this List<string> str)
+    {
+        // Cheap but whatever
+        var array = str.ToArray();
+        return array.ToPointerArray();
+    }
 }

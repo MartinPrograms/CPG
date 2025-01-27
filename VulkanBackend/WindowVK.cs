@@ -2,13 +2,13 @@
 using CPG.Common;
 using CPG.Interface;
 using CPG.Interface.Settings;
+using Silk.NET.Core.Native;
 using Silk.NET.Input;
 using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
-using VulkanBackend;
 using IWindow = CPG.Interface.IWindow;
 
-namespace OpenGLBackend;
+namespace VulkanBackend;
 
 public class WindowVK : IWindow
 {
@@ -72,15 +72,16 @@ public class WindowVK : IWindow
         {
             Input.Update();
             _updateCallback?.Invoke(this);
-        
         };
 
         _window.Load += () =>
         {
             var input = _window.CreateInput();
-            GraphicsApi = new GraphicsApiVK(_window);
+            GraphicsApi = new GraphicsApiVK(this);
             Input = new InputSilk(input);
-        
+
+            GraphicsApi.Init();
+            
             _loadCallback?.Invoke(this);
         };
 
@@ -147,5 +148,16 @@ public class WindowVK : IWindow
         }
         
         return extensions.ToArray();
+    }
+
+    public unsafe SurfaceKHR CreateSurface(Instance instance)
+    {
+        var a = _window.VkSurface!.Create<SurfaceKHR>(instance.ToHandle(), null);
+        return a.ToSurface();
+    }
+
+    public Extent2D Extent()
+    {
+        return new Extent2D((uint)Width, (uint)Height);
     }
 }
