@@ -51,4 +51,11 @@ public static class LogicalDeviceHelper
         vk.GetDeviceQueue(logicalDevice, queueFamilyIndices.GraphicsFamily, 0, out var queue);
         return queue;
     }
+
+    public static Queue GetPresentQueue(Device logicalDevice, QueueFamilyIndices queueFamilyIndices)
+    {
+        var vk = Context.Current.Vk;
+        vk.GetDeviceQueue(logicalDevice, queueFamilyIndices.GraphicsFamily, 0, out var queue);
+        return queue;
+    }
 }

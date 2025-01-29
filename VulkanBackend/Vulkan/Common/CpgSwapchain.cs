@@ -14,6 +14,7 @@ public class CpgSwapchain
     public ImageView[] SwapchainImageViews = default;
     public Extent2D SwapchainExtent = default;
     public SwapchainMode SwapchainMode = default;
+    public ImageLayout[] ImageFormats = default;
     public uint ImageCount = default;
     public uint CurrentImage = default;
     public Semaphore[] ImageAvailableSemaphores = default;

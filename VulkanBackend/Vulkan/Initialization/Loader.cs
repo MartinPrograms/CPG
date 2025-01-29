@@ -10,6 +10,7 @@ public class Loader
     public static void LoadVulkan(ref Context context, InitializationSettings settings, WindowVK window)
     {
         context.Settings = settings;
+        context.Window = window;
         
         context.DeletionQueue.Push(c =>
         {
@@ -41,6 +42,9 @@ public class Loader
         
         var graphicsQueue = LogicalDeviceHelper.GetGraphicsQueue(logicalDevice, queueFamilyIndices);
         context.GraphicsQueue = graphicsQueue;
+        
+        var presentQueue = LogicalDeviceHelper.GetPresentQueue(logicalDevice, queueFamilyIndices);
+        context.PresentQueue = presentQueue;
         
         var commandPool = CommandPoolHelper.CreateCommandPool(logicalDevice, queueFamilyIndices);
         context.CommandPool = commandPool;

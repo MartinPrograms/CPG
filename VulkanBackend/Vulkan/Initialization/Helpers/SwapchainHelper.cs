@@ -35,6 +35,7 @@ public static class SwapchainHelper
         CreateSwapchainDepthImage(ref cpgSwapchain, logicalDevice);
         CreateSwapchainRenderPass(ref cpgSwapchain, logicalDevice);
         CreateSwapchainFramebuffers(ref cpgSwapchain, logicalDevice);
+        CreateSwapchainCommandBuffers(ref cpgSwapchain, logicalDevice, queueFamilyIndices);
 
         DateTime endTime = DateTime.Now;
         
@@ -45,11 +46,11 @@ public static class SwapchainHelper
         
         Logger.Info("Swapchain created in " + (endTime - startTime).TotalMilliseconds + "ms", "SwapchainHelper");
         // More info about the swapchain
-        Logger.Info($"Swapchain Image Count: {cpgSwapchain.ImageCount}", "SwapchainHelper");
-        Logger.Info($"Swapchain Image Format: {cpgSwapchain.SwapchainMode.SwapchainImageFormat}", "SwapchainHelper");
-        Logger.Info($"Swapchain Color Space: {cpgSwapchain.SwapchainMode.SwapchainColorSpace}", "SwapchainHelper");
-        Logger.Info($"Swapchain Present Mode: {cpgSwapchain.SwapchainMode.SwapchainPresentMode}", "SwapchainHelper");
-        Logger.Info($"Swapchain Extent: {cpgSwapchain.SwapchainExtent.Width}x{cpgSwapchain.SwapchainExtent.Height}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Image Count: {cpgSwapchain.ImageCount}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Image Format: {cpgSwapchain.SwapchainMode.SwapchainImageFormat}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Color Space: {cpgSwapchain.SwapchainMode.SwapchainColorSpace}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Present Mode: {cpgSwapchain.SwapchainMode.SwapchainPresentMode}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Extent: {cpgSwapchain.SwapchainExtent.Width}x{cpgSwapchain.SwapchainExtent.Height}", "SwapchainHelper");
         
         return cpgSwapchain;
     }
@@ -108,6 +109,11 @@ public static class SwapchainHelper
         foreach (var imageInFlight in objSwapchain.ImagesInFlight)
         {
             vk.DestroyFence(logicalDevice, imageInFlight, null);
+        }
+        
+        foreach (var commandBuffer in objSwapchain.CommandBuffers)
+        {
+            vk.FreeCommandBuffers(logicalDevice, Context.Current.CommandPool, 1, &commandBuffer);
         }
         
         Logger.Info("Swapchain deleted", "SwapchainHelper");
@@ -282,14 +288,15 @@ public static class SwapchainHelper
         swapchainExtension.GetSwapchainImages(logicalDevice, Swapchain, &ImageCount, null);
         
         cpgSwapchain.SwapchainImages = new Image[ImageCount];
+        cpgSwapchain.ImageFormats = new ImageLayout[ImageCount];
         Image* images = stackalloc Image[(int)ImageCount];
 
         swapchainExtension.GetSwapchainImages(logicalDevice, Swapchain, &ImageCount, images);
-        
 
         for (var i = 0; i < ImageCount; i++)
         {
             cpgSwapchain.SwapchainImages[i] = images[i];
+            cpgSwapchain.ImageFormats[i] = ImageLayout.Undefined;
         }
         
         cpgSwapchain.SwapchainImageViews = new ImageView[ImageCount];
@@ -422,5 +429,105 @@ public static class SwapchainHelper
         var a = new SwapchainMode(format, colorSpace);
         a.SwapchainPresentMode = presentMode;
         return a;
+    }
+
+    public static unsafe void RecreateSwapchain(CpgSwapchain swapchain)
+    {
+        var vk = Context.Current.Vk;
+        var logicalDevice = Context.Current.Device;
+        var surface = Context.Current.Surface;
+        var queueFamilyIndices = Context.Current.QueueFamilyIndices;
+        
+        swapchain.SwapchainExtent = Context.Current.Window.Extent();
+        
+        vk.DeviceWaitIdle(logicalDevice);
+        
+        foreach (var imageView in swapchain.SwapchainImageViews)
+        {
+            vk.DestroyImageView(logicalDevice, imageView, null);
+        }
+
+        vk.DestroyRenderPass(logicalDevice, swapchain.RenderPass, null);
+        
+        // Destroy the khr swapchain
+        swapchain.SwapchainExtension.DestroySwapchain(logicalDevice, swapchain.Swapchain, null);
+
+        foreach (var framebuffer in swapchain.Framebuffers)
+        {
+            vk.DestroyFramebuffer(logicalDevice, framebuffer, null);
+        }
+        
+        foreach (var depthImageView in swapchain.DepthImageViews)
+        {
+            vk.DestroyImageView(logicalDevice, depthImageView, null);
+        }
+        
+        foreach (var depthImage in swapchain.DepthImages)
+        {
+            vk.DestroyImage(logicalDevice, depthImage, null);
+        }
+        
+        foreach (var depthImageMemory in swapchain.DepthImageMemory)
+        {
+            vk.FreeMemory(logicalDevice, depthImageMemory, null);
+        }
+        
+        foreach (var imageAvailableSemaphore in swapchain.ImageAvailableSemaphores)
+        {
+            vk.DestroySemaphore(logicalDevice, imageAvailableSemaphore, null);
+        }
+        
+        foreach (var renderFinishedSemaphore in swapchain.RenderFinishedSemaphores)
+        {
+            vk.DestroySemaphore(logicalDevice, renderFinishedSemaphore, null);
+        }
+        
+        foreach (var inFlightFence in swapchain.InFlightFences)
+        {
+            vk.DestroyFence(logicalDevice, inFlightFence, null);
+        }
+        
+        foreach (var imageInFlight in swapchain.ImagesInFlight)
+        {
+            vk.DestroyFence(logicalDevice, imageInFlight, null);
+        }
+        
+        foreach (var commandBuffer in swapchain.CommandBuffers)
+        {
+            vk.FreeCommandBuffers(logicalDevice, Context.Current.CommandPool, 1, &commandBuffer);
+        }
+        
+        CreateSwapchainKHR(ref swapchain, logicalDevice, queueFamilyIndices, surface);
+        CreateSwapchainImages(ref swapchain, logicalDevice);
+        CreateSwapchainSemaphores(ref swapchain, logicalDevice);
+        CreateSwapchainFences(ref swapchain, logicalDevice);
+        CreateSwapchainDepthImage(ref swapchain, logicalDevice);
+        CreateSwapchainRenderPass(ref swapchain, logicalDevice);
+        CreateSwapchainFramebuffers(ref swapchain, logicalDevice);
+        CreateSwapchainCommandBuffers(ref swapchain, logicalDevice, queueFamilyIndices);
+        
+        Logger.Info("Swapchain recreated", "SwapchainHelper");
+        Logger.Info($"  Swapchain Image Count: {swapchain.ImageCount}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Image Format: {swapchain.SwapchainMode.SwapchainImageFormat}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Color Space: {swapchain.SwapchainMode.SwapchainColorSpace}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Present Mode: {swapchain.SwapchainMode.SwapchainPresentMode}", "SwapchainHelper");
+        Logger.Info($"  Swapchain Extent: {swapchain.SwapchainExtent.Width}x{swapchain.SwapchainExtent.Height}", "SwapchainHelper");
+    }
+
+    private static unsafe void CreateSwapchainCommandBuffers(ref CpgSwapchain swapchain, Device logicalDevice, QueueFamilyIndices queueFamilyIndices)
+    {
+        var vk = Context.Current.Vk;
+        var commandPool = Context.Current.CommandPool;
+        var commandBuffers = new CommandBuffer[swapchain.ImageCount];
+
+        for (int i = 0; i < commandBuffers.Length; i++)
+        {
+            commandBuffers[i] = CommandPoolHelper.CreateCommandBuffer(logicalDevice, commandPool, CommandBufferLevel.Primary);
+            CommandPoolHelper.BeginCommandBuffer(commandBuffers[i], CommandBufferUsageFlags.SimultaneousUseBit, swapchain);
+            
+            Logger.Info($"Creating command buffer {i}", "SwapchainHelper");
+        }
+        
+        swapchain.CommandBuffers = commandBuffers;
     }
 }

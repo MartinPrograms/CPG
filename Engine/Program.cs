@@ -78,7 +78,16 @@ window.SetUpdateCallback((w) =>
     {
         w.Close();
     }
-    
+
+    if (w.Input.IsKeyReleased(Key.F5))
+    {
+        w.Fullscreen = !w.Fullscreen;
+    }
+
+    if (w.Input.IsKeyReleased(Key.F10))
+    {
+        throw new Exception("Testing crash");
+    }
 });
 
 window.SetLoadCallback((w) =>

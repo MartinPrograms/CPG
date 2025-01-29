@@ -15,7 +15,13 @@ public class WindowVK : IWindow
     public string Title { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public bool Fullscreen { get; set; }
+
+    public bool Fullscreen
+    {
+        get => _windowState == WindowState.Fullscreen;
+        set => _windowState = value ? WindowState.Fullscreen : WindowState.Normal;
+    }
+
     public bool VSync { get; set; }
     public double DeltaTime { get; set; }
     public double Time { get; set; }
@@ -58,14 +64,14 @@ public class WindowVK : IWindow
             this.Time += a;
             this.DeltaTime = a;
             
-            _renderCallback?.Render(GraphicsApi, this);
+            GraphicsApiVK.BeginFrame();
             
-            // Check for errors
-            var error = GraphicsApi.GetError();
-            if (error != null)
-            {
-                throw new GraphicsException(error);
-            }
+            _renderCallback?.Render(GraphicsApi!, this);
+            
+            GraphicsApiVK.EndFrame();
+            
+            // No need to check for errors, the GraphicsApi will handle it.
+            // Vulkan is nice like that.
         };
         
         _window.Update += (a) =>
@@ -122,6 +128,7 @@ public class WindowVK : IWindow
     private Action<IWindow> _loadCallback;
 
     public IGraphicsApi GraphicsApi { get; set; }
+    internal GraphicsApiVK GraphicsApiVK => (GraphicsApiVK)GraphicsApi;
     public void SetRenderCallback(GraphicsCallback callback)
     {
         _renderCallback = callback;
@@ -141,6 +148,9 @@ public class WindowVK : IWindow
     {
         if (NeedsSwap)   
             _window.SwapBuffers();
+        
+        if (_window.WindowState != _windowState)
+            _window.WindowState = _windowState;
     }
 
     public unsafe string[] GetRequiredExtensions()

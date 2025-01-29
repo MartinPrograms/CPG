@@ -33,6 +33,7 @@ public class Context
     public InitializationSettings Settings = null!;
     
     public Stack<Action<Context>> DeletionQueue = new(); // Fifo, so we can delete things in the correct order.
-    public Initialization.Helpers.QueueFamilyIndices QueueFamilyIndices { get; set; }
-    public CpgSwapchain Swapchain { get; set; }
+    public Initialization.Helpers.QueueFamilyIndices QueueFamilyIndices = default;
+    public CpgSwapchain Swapchain = default;
+    public WindowVK Window = default;
 }

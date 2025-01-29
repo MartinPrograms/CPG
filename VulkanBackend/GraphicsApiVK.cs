@@ -6,6 +6,7 @@ using CPG.Interface;
 using VulkanBackend.Settings;
 using VulkanBackend.Vulkan.Common;
 using VulkanBackend.Vulkan.Initialization;
+using VulkanBackend.Vulkan.Rendering;
 using IWindow = Silk.NET.Windowing.IWindow;
 
 namespace VulkanBackend;
@@ -15,6 +16,7 @@ public class GraphicsApiVK : IGraphicsApi
     private WindowVK _window;
     private Context _context;
     public SettingsContainer Settings { get; set; } = new();
+    private StateManager StateManager = new();
     
     public GraphicsApiVK(WindowVK window)
     {
@@ -163,5 +165,15 @@ public class GraphicsApiVK : IGraphicsApi
     {
         // Unused, all errors are thrown, because (unlike OpenGL) Vulkan errors are done differently.
         return null;
+    }
+    
+    public void BeginFrame()
+    {
+        StateManager.BeginFrame();
+    }
+    
+    public void EndFrame()
+    {
+        StateManager.EndFrame();
     }
 }
