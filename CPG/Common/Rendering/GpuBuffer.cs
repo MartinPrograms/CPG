@@ -1,6 +1,8 @@
-﻿namespace CPG.Common.Rendering;
+﻿using CPG.Interface;
 
-public unsafe class GpuBuffer<T>
+namespace CPG.Common.Rendering;
+
+public unsafe class GpuBuffer<T> : IBuffer
 {
     public void* Data { get; }
     /// <summary>

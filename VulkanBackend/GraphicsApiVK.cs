@@ -38,12 +38,12 @@ public class GraphicsApiVK : IGraphicsApi
 
     public void Clear(ClearMask mask)
     {
-        throw new NotImplementedException();
+        StateManager.Clear(mask);
     }
 
     public void SetClearColor(Vector4 color)
     {
-        throw new NotImplementedException();
+        StateManager.SetClearColor(color);
     }
 
     public void UseShader(IShader shader)
@@ -83,7 +83,7 @@ public class GraphicsApiVK : IGraphicsApi
 
     public void SetViewport(int x, int y, int width, int height)
     {
-        throw new NotImplementedException();
+        StateManager.SetViewport(x, y, width, height);
     }
 
     public IShader CreateShader(ShaderSettings settings)

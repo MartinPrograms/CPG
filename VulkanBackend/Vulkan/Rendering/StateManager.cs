@@ -1,13 +1,26 @@
-﻿using CPG;
+﻿using System.Numerics;
+using CPG;
+using CPG.Common.Rendering;
 using Silk.NET.Vulkan;
 using VulkanBackend.Vulkan.Common;
 using VulkanBackend.Vulkan.Initialization.Helpers;
+using VulkanBackend.Vulkan.Rendering.Common;
+using Viewport = VulkanBackend.Vulkan.Rendering.Common.Viewport;
 
 namespace VulkanBackend.Vulkan.Rendering;
 
 public class StateManager
 {
     // Yes, this is not how Vulkan should be used, but this graphics api is meant to be similar to OpenGL, which is a state machine.
+    public List<IRenderable> Renderables { get; set; } = new();
+    private IRenderable? _recentRenderPass = default;
+    
+    public Framebuffer CurrentFramebuffer { get; set; }
+    public RenderPass CurrentRenderPass { get; set; }
+    public Pipeline CurrentPipeline { get; set; }
+    public DescriptorSet CurrentDescriptorSet { get; set; }
+    
+    public Vector2 FramebufferSize { get; set; }
     
     private CommandBuffer currentCommandBuffer = default;
     private bool _frameStarted = false;
@@ -33,7 +46,6 @@ public class StateManager
             SwapchainHelper.RecreateSwapchain(swapchain);
             
             swapchain.CurrentImage = 0;
-            currentFrame = 0;
 
             _frameStarted = false;
             return;
@@ -68,6 +80,10 @@ public class StateManager
         
         // Now the user can start calling Graphics API functions, which will be translated into Vulkan commands
         _frameStarted = true;
+        
+        CurrentFramebuffer = swapchain.Framebuffers[index];
+        FramebufferSize = new Vector2(swapchain.SwapchainExtent.Width, swapchain.SwapchainExtent.Height);
+        CurrentRenderPass = swapchain.RenderPass;
     }
 
     public unsafe void EndFrame()
@@ -88,7 +104,26 @@ public class StateManager
         var inFlightFence = swapchain.InFlightFences[swapchain.CurrentImage];
         var commandBuffer = swapchain.CommandBuffers[swapchain.CurrentImage];
         
-        CommandPoolHelper.EndCommandBuffer(commandBuffer, swapchain);
+        // Call all the renderables, from last to first
+        for (int i = Renderables.Count - 1; i >= 0; i--)
+        {
+            var item = Renderables[i];
+            if (_recentRenderPass != item && _recentRenderPass is Clear && item is Clear)
+            {
+                // If the last item was a clear, we need to end the render pass, otherwise we run 2 render passes at once
+                vk.CmdEndRenderPass(currentCommandBuffer);
+                _recentRenderPass = item;
+            }
+            
+            item.Apply(currentCommandBuffer, this);
+        }
+        
+        Renderables.Clear();
+        
+        vk.CmdEndRenderPass(commandBuffer);
+        
+        
+        CommandPoolHelper.EndCommandBuffer(commandBuffer);
         
         var submitInfo = new SubmitInfo
         {
@@ -133,5 +168,27 @@ public class StateManager
         swapchain.CurrentImage++;
         
         _frameStarted = false;
+    }
+
+    public void Clear(ClearMask mask)
+    {
+        Renderables.Add(new Clear(){Mask = mask});
+    }
+
+    public void SetClearColor(Vector4 color)
+    {
+        // Get the last item in the renderables list, if it is a clear, set the color
+        if (Renderables.Count > 0)
+        {
+            if (Renderables[^1] is Clear clear)
+            {
+                clear.Color = color;
+            }
+        }
+    }
+
+    public void SetViewport(int i, int i1, int width, int height) // Same thing as renderpass
+    {
+        Renderables.Add(new Viewport(){X = i, Y = i1, Width = width, Height = height});
     }
 }

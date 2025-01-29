@@ -3,6 +3,7 @@ using CPG.Common;
 using CPG.Interface;
 using CPG.Interface.Settings;
 using Silk.NET.Core.Native;
+using Silk.NET.GLFW;
 using Silk.NET.Input;
 using Silk.NET.Vulkan;
 using Silk.NET.Windowing;
@@ -33,6 +34,7 @@ public class WindowVK : IWindow
     public IInput Input { get; private set; }
 
     internal SettingsContainer Settings { get; set; }
+    private bool _focused = true;
     public WindowVK(WindowSettings settings, SettingsContainer settingsContainer)
     {
         Settings = settingsContainer;
@@ -72,6 +74,11 @@ public class WindowVK : IWindow
             
             // No need to check for errors, the GraphicsApi will handle it.
             // Vulkan is nice like that.
+            
+            if (!_focused)
+            {
+                System.Threading.Thread.Sleep(1000 / 30);
+            }
         };
         
         _window.Update += (a) =>
@@ -102,7 +109,13 @@ public class WindowVK : IWindow
         
         _window.Closing += () =>
         {
-            GraphicsApi.Shutdown();
+            GraphicsApi!.Shutdown();
+        };
+
+        _window.FocusChanged += (a) =>
+        {
+            // a is if the window is focused or not. If not set a limit of 30fps
+            _focused = a;
         };
     }
     

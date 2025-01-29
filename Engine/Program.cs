@@ -33,22 +33,34 @@ settings.Add(new InitializationSettings()
 
 var window = Graphics.Initialize()
     .WithWindowSettings(new WindowSettings("Testing", 800, 600, false, false))
-    .WithGraphicsInterface(new VulkanBackend.VulkanBackend())
+    .WithGraphicsInterface(new OpenGLBackend.OpenGLBackend())
     .WithCustomSettings(settings)
     .Build();
 
 //Mesh mesh = null!;
 
+List<double> frameTimes = new();
+int idx = 0;
 window.SetRenderCallback(new GraphicsCallback((a, w) =>
 {
-    /*
-    a.Clear(ClearMask.Color | ClearMask.Depth);   
-    a.SetClearColor(new Vector4(0.2f, 0.4f, 0.6f, 1.0f));
-    a.SetViewport(0,0,w.Width,w.Height);
     
+    
+    /*
     mesh.Draw();
     */
     w.SwapBuffers();
+    
+    frameTimes.Insert(0, w.DeltaTime);
+    if (frameTimes.Count > 100)
+    {
+        frameTimes.RemoveAt(frameTimes.Count - 1);
+    }
+
+    if (idx++ % 100 == 0)
+    {
+        var avg = frameTimes.Average();
+        Logger.Info($"Average frame time: {(avg * 1000.0f):0.00}ms {(1.0 / avg):0.00}fps", "Main");
+    }
 }));
 
 window.SetUpdateCallback((w) =>

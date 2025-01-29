@@ -30,192 +30,107 @@ public class GraphicsApiGL : IGraphicsApi
         // TODO: Do this lol, itll automatically be done by the GC but its good practice to do it manually.
     }
 
-    public void Clear(ClearMask mask)
+    public void BeginRenderPass(RenderPassInfo renderPassInfo)
     {
-        var clearMask = 0;
-        if (mask.HasFlag(ClearMask.Color))
-        {
-            clearMask |= (int)GLEnum.ColorBufferBit;
-        }
         
-        if (mask.HasFlag(ClearMask.Depth))
-        {
-            clearMask |= (int)GLEnum.DepthBufferBit;
-        }
-        
-        if (mask.HasFlag(ClearMask.Stencil))
-        {
-            clearMask |= (int)GLEnum.StencilBufferBit;
-        }
-        
-        _gl.Clear((uint)clearMask);
     }
 
-    public void SetClearColor(Vector4 color)
+    public void EndRenderPass()
     {
-        _gl.ClearColor(color.X, color.Y, color.Z, color.W);
+        // Useless on OpenGL, but VERY useful on Vulkan.
     }
 
-    public void UseShader(IShader shader)
+    public IPipeline CreatePipeline(PipelineSettings settings)
     {
-        ShaderManager.UseShader(shader);
+        throw new NotImplementedException();
     }
 
-    public bool SetUniform<T>(IShader shader, string name, T value)
+    public void BindPipeline(IPipeline pipeline)
     {
-        return ShaderManager.SetUniform(_gl, shader, name, value);
+        throw new NotImplementedException();
     }
 
-    public void UseTexture(ITexture texture, uint slot)
+    public void DeletePipeline(IPipeline pipeline)
     {
-        TextureManager.UseTexture(texture, slot);
+        throw new NotImplementedException();
     }
 
-    public void UseVertexBuffer<T>(IVertexBuffer buffer) where T : unmanaged
+    public void BindVertexBuffers(IVertexBuffer[] buffers, uint[] offsets)
     {
-        VertexBufferManager.UseVertexBuffer<T>(buffer);
+        throw new NotImplementedException();
     }
 
-    public void UseIndexBuffer<T>(IIndexBuffer buffer) where T : unmanaged
+    public void BindIndexBuffer(IIndexBuffer buffer, uint offset)
     {
-        IndexBufferManager.UseIndexBuffer<T>(buffer);
+        throw new NotImplementedException();
     }
 
-    public void UseFrameBuffer(IFrameBuffer buffer)
+    public void BindDescriptorSets(IDescriptorSet[] descriptorSets, uint firstSet = 0)
     {
-        throw new System.NotImplementedException();
-        //FrameBufferManager.UseFrameBuffer(buffer);
+        throw new NotImplementedException();
     }
 
-    public unsafe void Draw<V,I>(DrawCallSettings<V,I> settings) where V : unmanaged where I : unmanaged
+    public void Draw<V, I>(DrawCallSettings<V, I> drawInfo) where V : unmanaged where I : unmanaged
     {
-        var type = settings.PrimitiveType switch
-        {
-            Primitive.Triangle => PrimitiveType.Triangles,
-            Primitive.Line => PrimitiveType.Lines,
-            Primitive.Quad => PrimitiveType.Points,
-            _ => PrimitiveType.Triangles
-        };
-        
-        var instanceCount = settings.InstanceCount;
-        var indexCount = settings.IndexCount;
-        
-        var indexBuffer = settings.IndexBuffer; // nullable
-        var vertexBuffer = settings.VertexBuffer;
-        
-        UseVertexBuffer<V>(vertexBuffer);
-        
-        if (indexBuffer != null)
-        {
-            UseIndexBuffer<I>(indexBuffer);
-            
-            if (instanceCount > 0)
-            {
-                _gl.DrawElementsInstanced(type, (uint)indexCount, GLEnum.UnsignedInt, null, (uint)instanceCount);
-            }
-            else
-            {
-                _gl.DrawElements(type, (uint)indexCount, GLEnum.UnsignedInt, null);
-            }
-        }
-        else
-        {
-            
-            if (instanceCount > 0)
-            {
-                _gl.DrawArraysInstanced(type, 0, (uint)indexCount, (uint)instanceCount);
-            }
-            else
-            {
-                _gl.DrawArrays(type, 0, (uint)indexCount);
-            }
-        }
+        throw new NotImplementedException();
     }
 
-    public void SetViewport(int x, int y, int width, int height)
+    public IDescriptorSet CreateDescriptorSet(DescriptorSetSettings settings)
     {
-        _gl.Viewport(x, y, (uint)width, (uint)height);
-    }
-
-    public IShader CreateShader(ShaderSettings settings)
-    {
-        return ShaderManager.CreateShader(_gl, settings);
+        throw new NotImplementedException();
     }
 
     public ITexture CreateTexture(TextureSettings settings)
     {
-        return TextureManager.CreateTexture(_gl, settings);
+        throw new NotImplementedException();
     }
 
     public IVertexBuffer CreateVertexBuffer<T>(VertexBufferSettings<T> settings) where T : unmanaged
     {
-        return VertexBufferManager.CreateVertexBuffer(_gl, settings);
+        throw new NotImplementedException();
     }
 
     public IIndexBuffer CreateIndexBuffer<T>(IndexBufferSettings<T> settings) where T : unmanaged
     {
-        return IndexBufferManager.CreateIndexBuffer(_gl, settings);
+        throw new NotImplementedException();
     }
 
     public IFrameBuffer CreateFrameBuffer(FrameBufferSettings settings)
     {
-        throw new System.NotImplementedException();
-        //return FrameBufferManager.CreateFrameBuffer(settings);
+        throw new NotImplementedException();
     }
 
-    public void DeleteShader(IShader shader)
+    public void DeleteDescriptorSet(IDescriptorSet descriptorSet)
     {
-        ShaderManager.DeleteShader(shader);
+        throw new NotImplementedException();
     }
 
     public void DeleteTexture(ITexture texture)
     {
-        TextureManager.DeleteTexture(texture);
+        throw new NotImplementedException();
     }
 
-    public void DeleteVertexBuffer<T>(IVertexBuffer buffer) where T : unmanaged
+    public void DeleteVertexBuffer(IVertexBuffer buffer)
     {
-        VertexBufferManager.DeleteVertexBuffer<T>(buffer);
+        throw new NotImplementedException();
     }
 
-    public void DeleteIndexBuffer<T>(IIndexBuffer buffer) where T : unmanaged
+    public void DeleteIndexBuffer(IIndexBuffer buffer)
     {
-        IndexBufferManager.DeleteIndexBuffer<T>(buffer);
+        throw new NotImplementedException();
     }
 
     public void DeleteFrameBuffer(IFrameBuffer buffer)
     {
-        throw new System.NotImplementedException();
-        //FrameBufferManager.DeleteFrameBuffer(buffer);
+        throw new NotImplementedException();
     }
 
-    public void UpdateVertexBuffer<T>(IVertexBuffer buffer, T[] data) where T : unmanaged
+    public void UpdateBuffer<T>(GpuBuffer<T> buffer, T[] data) where T : unmanaged
     {
-        VertexBufferManager.UpdateVertexBuffer(buffer, data);
+        throw new NotImplementedException();
     }
 
-    public void UpdateIndexBuffer<T>(IIndexBuffer buffer, T[] data) where T : unmanaged
-    {
-        IndexBufferManager.UpdateIndexBuffer(buffer, data);
-    }
-
-    public void UnbindVertexBuffer()
-    {
-        VertexBufferManager.UnbindVertexBuffer(_gl);
-    }
-
-    public void UnbindIndexBuffer()
-    {
-        IndexBufferManager.UnbindIndexBuffer(_gl);
-    }
-
-    public void UnbindFrameBuffer()
-    {
-        throw new System.NotImplementedException();
-        //FrameBufferManager.UnbindFrameBuffer();
-    }
-
-    public GraphicsError? GetError()
+    public GraphicsError? GetLastError()
     {
         var error = _gl.GetError();
         

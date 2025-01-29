@@ -55,7 +55,7 @@ public class WindowGL : IWindow
             _renderCallback?.Render(GraphicsApi, this);
             
             // Check for errors
-            var error = GraphicsApi.GetError();
+            var error = GraphicsApi!.GetLastError();
             if (error != null)
             {
                 throw new GraphicsException(error);

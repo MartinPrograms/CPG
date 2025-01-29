@@ -2,7 +2,7 @@
 
 namespace CPG.Common.Rendering;
 
-public record DrawCallSettings<V,I>(IVertexBuffer VertexBuffer, IIndexBuffer? IndexBuffer, Primitive PrimitiveType, int VertexCount, int IndexCount, int InstanceCount) where V : unmanaged where I : unmanaged;
+public record DrawCallSettings<V,I>(IVertexBuffer VertexBuffer, IIndexBuffer? IndexBuffer, int VertexCount, int IndexCount, int InstanceCount) where V : unmanaged where I : unmanaged;
 
 public enum Primitive
 {
